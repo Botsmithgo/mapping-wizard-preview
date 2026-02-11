@@ -342,27 +342,6 @@
     }
     .empty-state-btn:hover { border-color: var(--primary); background: var(--primary-light); }
 
-    .stat-cards { display: flex; gap: var(--sp-3); margin-bottom: var(--sp-4); }
-    .stat-card {
-      flex: 1; padding: var(--sp-3) var(--sp-4);
-      background: var(--white); border: 1.5px solid transparent; border-radius: var(--radius-md);
-      cursor: pointer; transition: all var(--duration) var(--ease);
-      box-shadow: var(--shadow-xs);
-    }
-    .stat-card:hover { box-shadow: var(--shadow-sm); }
-    .stat-card.active { box-shadow: var(--shadow-md); }
-    .stat-card.all.active { border-color: var(--primary); background: rgba(8,145,178,0.03); }
-    .stat-card.high.active { border-color: var(--success); background: rgba(16,185,129,0.03); }
-    .stat-card.med.active { border-color: var(--warning); background: rgba(245,158,11,0.03); }
-    .stat-card.low.active { border-color: var(--error); background: rgba(239,68,68,0.03); }
-    .stat-value { font-size: var(--text-xl); font-weight: 700; margin-bottom: 2px; display: flex; align-items: center; gap: var(--sp-2); }
-    .stat-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
-    .stat-dot.all { background: var(--primary); }
-    .stat-dot.high { background: var(--success); }
-    .stat-dot.med { background: var(--warning); }
-    .stat-dot.low { background: var(--error); }
-    .stat-label { font-size: var(--text-xs); font-weight: 500; color: var(--gray-500); text-transform: uppercase; letter-spacing: .3px; }
-
     .warning-bar {
       display: flex; align-items: center; gap: var(--sp-3);
       padding: var(--sp-3) var(--sp-4); margin-bottom: var(--sp-4);
@@ -486,6 +465,11 @@
     .fields-table tbody tr.needs-attention:hover td { background: #fef3c7; }
 
     .field-name { font-family: var(--font-mono); font-size: var(--text-xs); font-weight: 500; color: var(--gray-700); }
+    .type-badge {
+      font-family: var(--font-mono); font-size: 10px; font-weight: 500;
+      color: var(--gray-500); background: var(--gray-100);
+      padding: 2px 6px; border-radius: 3px;
+    }
     .semantic-label { font-weight: 500; color: var(--primary); font-size: var(--text-sm); }
     .code-badge {
       display: inline-flex; padding: 2px 7px; border-radius: var(--radius-sm);
@@ -514,18 +498,6 @@
     .status-tag.approved { background: var(--success-light); color: var(--success-text); }
     .status-tag.review { background: var(--warning-light); color: var(--warning-text); }
     .status-tag.abstained { background: var(--gray-150); color: var(--gray-500); }
-
-    .action-btns { display: flex; gap: var(--sp-1); }
-    .action-btn {
-      padding: 4px 10px; border-radius: var(--radius-sm);
-      border: 1px solid var(--gray-200); background: var(--white);
-      font-size: var(--text-xs); font-weight: 600; cursor: pointer;
-      transition: all var(--duration-fast) var(--ease); color: var(--gray-500); font-family: inherit;
-    }
-    .action-btn:hover { border-color: var(--primary); color: var(--primary); background: var(--primary-light); }
-    .action-btn.approve { border-color: var(--success-border); color: #16a34a; }
-    .action-btn.approve:hover { background: #f0fdf4; }
-    .action-btn.needs-review { border-color: var(--primary); color: var(--primary); background: var(--primary-light); }
 
     .file-row-footer {
       display: flex; align-items: center; justify-content: space-between;
@@ -735,59 +707,59 @@ const classifiedFiles = [
     id: 'f1', fileName: 'patients_export.csv', format: 'CSV', shape: 'tabular',
     assignedRole: 'patients', confidence: 98, issues: 0,
     fields: [
-      { id: 'p1', fieldName: 'patient_id', semanticLabel: 'Patient Identifier', ontology: 'fhir', ontologyCode: 'Patient.identifier', confidence: 98, status: 'approved', sample: 'PAT-12345' },
-      { id: 'p2', fieldName: 'first_name', semanticLabel: 'Patient Given Name', ontology: 'fhir', ontologyCode: 'Patient.name.given', confidence: 96, status: 'approved', sample: 'Sarah' },
-      { id: 'p3', fieldName: 'last_name', semanticLabel: 'Patient Family Name', ontology: 'fhir', ontologyCode: 'Patient.name.family', confidence: 97, status: 'approved', sample: 'Johnson' },
-      { id: 'p4', fieldName: 'dob', semanticLabel: 'Date of Birth', ontology: 'fhir', ontologyCode: 'Patient.birthDate', confidence: 94, status: 'approved', sample: '1985-03-22' },
-      { id: 'p5', fieldName: 'gender', semanticLabel: 'Administrative Gender', ontology: 'fhir', ontologyCode: 'Patient.gender', confidence: 91, status: 'approved', sample: 'female' },
-      { id: 'p6', fieldName: 'ssn_last4', semanticLabel: 'Partial SSN', ontology: 'none', ontologyCode: null, confidence: 72, status: 'review', sample: '4589' },
-      { id: 'p7', fieldName: 'zip_code', semanticLabel: 'Postal Code', ontology: 'fhir', ontologyCode: 'Address.postalCode', confidence: 93, status: 'approved', sample: '90210' },
-      { id: 'p8', fieldName: 'phone', semanticLabel: 'Contact Phone', ontology: 'fhir', ontologyCode: 'Patient.telecom', confidence: 90, status: 'approved', sample: '555-0134' },
+      { id: 'p1', fieldName: 'patient_id', dataType: 'string', semanticLabel: 'Patient Identifier', ontology: 'fhir', ontologyCode: 'Patient.identifier', confidence: 98, status: 'approved', sample: 'PAT-12345' },
+      { id: 'p2', fieldName: 'first_name', dataType: 'string', semanticLabel: 'Patient Given Name', ontology: 'fhir', ontologyCode: 'Patient.name.given', confidence: 96, status: 'approved', sample: 'Sarah' },
+      { id: 'p3', fieldName: 'last_name', dataType: 'string', semanticLabel: 'Patient Family Name', ontology: 'fhir', ontologyCode: 'Patient.name.family', confidence: 97, status: 'approved', sample: 'Johnson' },
+      { id: 'p4', fieldName: 'dob', dataType: 'date', semanticLabel: 'Date of Birth', ontology: 'fhir', ontologyCode: 'Patient.birthDate', confidence: 94, status: 'approved', sample: '1985-03-22' },
+      { id: 'p5', fieldName: 'gender', dataType: 'string', semanticLabel: 'Administrative Gender', ontology: 'fhir', ontologyCode: 'Patient.gender', confidence: 91, status: 'approved', sample: 'female' },
+      { id: 'p6', fieldName: 'ssn_last4', dataType: 'string', semanticLabel: 'Partial SSN', ontology: 'none', ontologyCode: null, confidence: 72, status: 'review', sample: '4589' },
+      { id: 'p7', fieldName: 'zip_code', dataType: 'string', semanticLabel: 'Postal Code', ontology: 'fhir', ontologyCode: 'Address.postalCode', confidence: 93, status: 'approved', sample: '90210' },
+      { id: 'p8', fieldName: 'phone', dataType: 'string', semanticLabel: 'Contact Phone', ontology: 'fhir', ontologyCode: 'Patient.telecom', confidence: 90, status: 'approved', sample: '555-0134' },
     ]
   },
   {
     id: 'f2', fileName: 'encounters_2024.csv', format: 'CSV', shape: 'tabular',
     assignedRole: 'encounters', confidence: 96, issues: 3,
     fields: [
-      { id: 'e1', fieldName: 'visit_id', semanticLabel: 'Encounter Identifier', ontology: 'fhir', ontologyCode: 'Encounter.identifier', confidence: 96, status: 'approved', sample: 'VIS-8821' },
-      { id: 'e2', fieldName: 'visit_date', semanticLabel: 'Encounter Start', ontology: 'fhir', ontologyCode: 'Encounter.period.start', confidence: 93, status: 'approved', sample: '2024-01-15' },
-      { id: 'e3', fieldName: 'provider_id', semanticLabel: 'Practitioner Reference', ontology: 'fhir', ontologyCode: 'Encounter.participant', confidence: 88, status: 'approved', sample: 'PRV-441' },
-      { id: 'e4', fieldName: 'visit_type', semanticLabel: 'Encounter Type', ontology: 'fhir', ontologyCode: 'Encounter.type', confidence: 85, status: 'approved', sample: 'ROUTINE' },
-      { id: 'e5', fieldName: 'location_cd', semanticLabel: 'Service Location', ontology: 'fhir', ontologyCode: 'Encounter.location', confidence: 68, status: 'review', sample: 'LOC-3' },
-      { id: 'e6', fieldName: 'status_flag', semanticLabel: 'Unknown', ontology: 'none', ontologyCode: null, confidence: 35, status: 'abstained', sample: '1' },
+      { id: 'e1', fieldName: 'visit_id', dataType: 'string', semanticLabel: 'Encounter Identifier', ontology: 'fhir', ontologyCode: 'Encounter.identifier', confidence: 96, status: 'approved', sample: 'VIS-8821' },
+      { id: 'e2', fieldName: 'visit_date', dataType: 'datetime', semanticLabel: 'Encounter Start', ontology: 'fhir', ontologyCode: 'Encounter.period.start', confidence: 93, status: 'approved', sample: '2024-01-15' },
+      { id: 'e3', fieldName: 'provider_id', dataType: 'string', semanticLabel: 'Practitioner Reference', ontology: 'fhir', ontologyCode: 'Encounter.participant', confidence: 88, status: 'approved', sample: 'PRV-441' },
+      { id: 'e4', fieldName: 'visit_type', dataType: 'string', semanticLabel: 'Encounter Type', ontology: 'fhir', ontologyCode: 'Encounter.type', confidence: 85, status: 'approved', sample: 'ROUTINE' },
+      { id: 'e5', fieldName: 'location_cd', dataType: 'string', semanticLabel: 'Service Location', ontology: 'fhir', ontologyCode: 'Encounter.location', confidence: 68, status: 'review', sample: 'LOC-3' },
+      { id: 'e6', fieldName: 'status_flag', dataType: 'integer', semanticLabel: 'Unknown', ontology: 'none', ontologyCode: null, confidence: 35, status: 'abstained', sample: '1' },
     ]
   },
   {
     id: 'f3', fileName: 'procedures_jan.json', format: 'JSON', shape: 'object',
     assignedRole: 'procedures', confidence: 95, issues: 0,
     fields: [
-      { id: 'pr1', fieldName: 'proc_cd', semanticLabel: 'Procedure Code', ontology: 'cdt', ontologyCode: 'D1110', confidence: 95, status: 'approved', sample: 'D1110' },
-      { id: 'pr2', fieldName: 'proc_desc', semanticLabel: 'Procedure Description', ontology: 'cdt', ontologyCode: null, confidence: 90, status: 'approved', sample: 'Prophylaxis – Adult' },
-      { id: 'pr3', fieldName: 'tooth_num', semanticLabel: 'Tooth Number', ontology: 'snodent', ontologyCode: '1234', confidence: 87, status: 'approved', sample: '14' },
-      { id: 'pr4', fieldName: 'surface', semanticLabel: 'Tooth Surface', ontology: 'snodent', ontologyCode: null, confidence: 82, status: 'review', sample: 'MOD' },
-      { id: 'pr5', fieldName: 'proc_fee', semanticLabel: 'Procedure Fee', ontology: 'none', ontologyCode: null, confidence: 78, status: 'review', sample: '185.00' },
-      { id: 'pr6', fieldName: 'proc_date', semanticLabel: 'Procedure Date', ontology: 'fhir', ontologyCode: 'Procedure.performed', confidence: 92, status: 'approved', sample: '2024-01-15' },
-      { id: 'pr7', fieldName: 'dx_code', semanticLabel: 'Diagnosis Code', ontology: 'snomed', ontologyCode: '80967001', confidence: 89, status: 'approved', sample: '80967001' },
+      { id: 'pr1', fieldName: 'proc_cd', dataType: 'string', semanticLabel: 'Procedure Code', ontology: 'cdt', ontologyCode: 'D1110', confidence: 95, status: 'approved', sample: 'D1110' },
+      { id: 'pr2', fieldName: 'proc_desc', dataType: 'string', semanticLabel: 'Procedure Description', ontology: 'cdt', ontologyCode: null, confidence: 90, status: 'approved', sample: 'Prophylaxis – Adult' },
+      { id: 'pr3', fieldName: 'tooth_num', dataType: 'integer', semanticLabel: 'Tooth Number', ontology: 'snodent', ontologyCode: '1234', confidence: 87, status: 'approved', sample: '14' },
+      { id: 'pr4', fieldName: 'surface', dataType: 'string', semanticLabel: 'Tooth Surface', ontology: 'snodent', ontologyCode: null, confidence: 82, status: 'review', sample: 'MOD' },
+      { id: 'pr5', fieldName: 'proc_fee', dataType: 'decimal', semanticLabel: 'Procedure Fee', ontology: 'none', ontologyCode: null, confidence: 78, status: 'review', sample: '185.00' },
+      { id: 'pr6', fieldName: 'proc_date', dataType: 'date', semanticLabel: 'Procedure Date', ontology: 'fhir', ontologyCode: 'Procedure.performed', confidence: 92, status: 'approved', sample: '2024-01-15' },
+      { id: 'pr7', fieldName: 'dx_code', dataType: 'string', semanticLabel: 'Diagnosis Code', ontology: 'snomed', ontologyCode: '80967001', confidence: 89, status: 'approved', sample: '80967001' },
     ]
   },
   {
     id: 'f4', fileName: 'claims_q1.csv', format: 'CSV', shape: 'tabular',
     assignedRole: 'claims', confidence: 100, issues: 0,
     fields: [
-      { id: 'c1', fieldName: 'claim_id', semanticLabel: 'Claim Identifier', ontology: 'fhir', ontologyCode: 'Claim.identifier', confidence: 97, status: 'approved', sample: 'CLM-19923' },
-      { id: 'c2', fieldName: 'payer_id', semanticLabel: 'Insurer Reference', ontology: 'fhir', ontologyCode: 'Claim.insurer', confidence: 91, status: 'approved', sample: 'INS-Delta' },
-      { id: 'c3', fieldName: 'claim_status', semanticLabel: 'Claim Status', ontology: 'fhir', ontologyCode: 'Claim.status', confidence: 89, status: 'approved', sample: 'active' },
-      { id: 'c4', fieldName: 'billed_amt', semanticLabel: 'Total Billed', ontology: 'fhir', ontologyCode: 'Claim.total', confidence: 86, status: 'approved', sample: '450.00' },
+      { id: 'c1', fieldName: 'claim_id', dataType: 'string', semanticLabel: 'Claim Identifier', ontology: 'fhir', ontologyCode: 'Claim.identifier', confidence: 97, status: 'approved', sample: 'CLM-19923' },
+      { id: 'c2', fieldName: 'payer_id', dataType: 'string', semanticLabel: 'Insurer Reference', ontology: 'fhir', ontologyCode: 'Claim.insurer', confidence: 91, status: 'approved', sample: 'INS-Delta' },
+      { id: 'c3', fieldName: 'claim_status', dataType: 'string', semanticLabel: 'Claim Status', ontology: 'fhir', ontologyCode: 'Claim.status', confidence: 89, status: 'approved', sample: 'active' },
+      { id: 'c4', fieldName: 'billed_amt', dataType: 'decimal', semanticLabel: 'Total Billed', ontology: 'fhir', ontologyCode: 'Claim.total', confidence: 86, status: 'approved', sample: '450.00' },
     ]
   },
   {
     id: 'f5', fileName: 'lab_results.json', format: 'JSON', shape: 'object',
     assignedRole: 'observations', confidence: 88, issues: 2,
     fields: [
-      { id: 'o1', fieldName: 'lab_code', semanticLabel: 'Observation Code', ontology: 'loinc', ontologyCode: '2339-0', confidence: 88, status: 'approved', sample: '2339-0' },
-      { id: 'o2', fieldName: 'lab_result', semanticLabel: 'Observation Value', ontology: 'loinc', ontologyCode: null, confidence: 75, status: 'review', sample: '92' },
-      { id: 'o3', fieldName: 'lab_unit', semanticLabel: 'Value Unit', ontology: 'loinc', ontologyCode: null, confidence: 70, status: 'review', sample: 'mg/dL' },
-      { id: 'o4', fieldName: 'collected_dt', semanticLabel: 'Collection Date', ontology: 'fhir', ontologyCode: 'Observation.effective', confidence: 91, status: 'approved', sample: '2024-01-10' },
+      { id: 'o1', fieldName: 'lab_code', dataType: 'string', semanticLabel: 'Observation Code', ontology: 'loinc', ontologyCode: '2339-0', confidence: 88, status: 'approved', sample: '2339-0' },
+      { id: 'o2', fieldName: 'lab_result', dataType: 'decimal', semanticLabel: 'Observation Value', ontology: 'loinc', ontologyCode: null, confidence: 75, status: 'review', sample: '92' },
+      { id: 'o3', fieldName: 'lab_unit', dataType: 'string', semanticLabel: 'Value Unit', ontology: 'loinc', ontologyCode: null, confidence: 70, status: 'review', sample: 'mg/dL' },
+      { id: 'o4', fieldName: 'collected_dt', dataType: 'datetime', semanticLabel: 'Collection Date', ontology: 'fhir', ontologyCode: 'Observation.effective', confidence: 91, status: 'approved', sample: '2024-01-10' },
     ]
   },
 ];
@@ -814,7 +786,6 @@ function App() {
   const [expanded, setExpanded] = useState({});
   const [showAllFields, setShowAllFields] = useState({});
   const [schemaView, setSchemaView] = useState({});
-  const [filter, setFilter] = useState('all');
   const [statusFilter, setStatusFilter] = useState('all');
   const [search, setSearch] = useState('');
   const [ackReview, setAckReview] = useState(false);
@@ -933,22 +904,9 @@ function App() {
     lines.push(<span key="close" className="json-bracket">{'}'}</span>);
     return lines;
   };
-  const approveField = (fId, fdId) => {
-    setCFiles(fs => fs.map(f => f.id === fId ? { ...f, fields: f.fields.map(fd => fd.id === fdId ? { ...fd, status: 'approved' } : fd) } : f));
-  };
-  const approveAllInFile = (fId) => {
-    setCFiles(fs => fs.map(f => f.id === fId ? { ...f, fields: f.fields.map(fd => ({ ...fd, status: 'approved' })) } : f));
-  };
-
   const flat = useMemo(() => allFields(cFiles), [cFiles]);
   const reviewCount = flat.filter(f => f.status === 'review').length;
   const totalIssues = cFiles.reduce((s, f) => s + f.issues, 0);
-  const stats = useMemo(() => ({
-    all: flat.length, high: flat.filter(f => f.confidence >= 85).length,
-    med: flat.filter(f => f.confidence >= 65 && f.confidence < 85).length,
-    low: flat.filter(f => f.confidence < 65).length,
-  }), [flat]);
-
   const filteredFiles = useMemo(() => {
     let files = cFiles;
 
@@ -956,18 +914,6 @@ function App() {
     if (statusFilter !== 'all') {
       files = files.map(f => ({
         ...f, fields: f.fields.filter(fd => fd.status === statusFilter)
-      })).filter(f => f.fields.length > 0);
-    }
-
-    // Confidence filter (stat cards)
-    if (filter !== 'all') {
-      files = files.map(f => ({
-        ...f, fields: f.fields.filter(fd => {
-          if (filter === 'high') return fd.confidence >= 85;
-          if (filter === 'med') return fd.confidence >= 65 && fd.confidence < 85;
-          if (filter === 'low') return fd.confidence < 65;
-          return true;
-        })
       })).filter(f => f.fields.length > 0);
     }
 
@@ -988,11 +934,11 @@ function App() {
     }
 
     return files;
-  }, [cFiles, filter, statusFilter, search]);
+  }, [cFiles, statusFilter, search]);
 
   const filteredFieldCount = filteredFiles.reduce((s, f) => s + f.fields.length, 0);
-  const isFiltered = filter !== 'all' || statusFilter !== 'all' || search.trim();
-  const clearAllFilters = () => { setFilter('all'); setStatusFilter('all'); setSearch(''); };
+  const isFiltered = statusFilter !== 'all' || search.trim();
+  const clearAllFilters = () => { setStatusFilter('all'); setSearch(''); };
 
   /* Step 4 */
   const handleGenerate = () => {
@@ -1157,19 +1103,6 @@ function App() {
                   </div>
                 )}
 
-                <div className="stat-cards">
-                  {[
-                    { key: 'all', label: 'All Fields', val: stats.all },
-                    { key: 'high', label: 'High Confidence', val: stats.high },
-                    { key: 'med', label: 'Medium', val: stats.med },
-                    { key: 'low', label: 'Low / Abstained', val: stats.low },
-                  ].map(s => (
-                    <div key={s.key} className={`stat-card ${s.key} ${filter === s.key ? 'active' : ''}`} onClick={() => setFilter(s.key)}>
-                      <div className="stat-value"><span className={`stat-dot ${s.key}`} />{s.val}</div>
-                      <div className="stat-label">{s.label}</div>
-                    </div>
-                  ))}
-                </div>
 
                 <div className="file-row-list">
                   <div className="file-row-list-header">
@@ -1228,12 +1161,12 @@ function App() {
                                   <thead>
                                     <tr>
                                       <th>Field</th>
+                                      <th>Type</th>
                                       <th>Semantic Meaning</th>
                                       <th>Code System</th>
                                       <th>Example</th>
                                       <th>Confidence</th>
                                       <th>Status</th>
-                                      <th>Actions</th>
                                     </tr>
                                   </thead>
                                   <tbody>
@@ -1242,17 +1175,12 @@ function App() {
                                       return (
                                         <tr key={fd.id} className={fd.status !== 'approved' ? 'needs-attention' : ''}>
                                           <td><span className="field-name">{fd.fieldName}</span></td>
+                                          <td><span className="type-badge">{fd.dataType}</span></td>
                                           <td><span className="semantic-label">{fd.semanticLabel}</span></td>
                                           <td><span className={`code-badge ${fd.ontology === 'none' ? 'none' : ''}`}>{fd.ontology === 'none' ? '—' : fd.ontology.toUpperCase()}</span></td>
                                           <td><span className="sample-chip" title={fd.sample}>{fd.sample}</span></td>
                                           <td><span className={`conf-value ${fcl}`}>{fd.confidence}%</span></td>
                                           <td><span className={`status-tag ${fd.status}`}>{fd.status === 'approved' && '✓ Approved'}{fd.status === 'review' && '⚠ Review'}{fd.status === 'abstained' && '— Abstained'}</span></td>
-                                          <td>
-                                            <div className="action-btns">
-                                              <button className={`action-btn ${fd.status === 'review' ? 'needs-review' : ''}`}>Edit</button>
-                                              {fd.status !== 'approved' && <button className="action-btn approve" onClick={e => { e.stopPropagation(); approveField(file.id, fd.id); }}>Approve</button>}
-                                            </div>
-                                          </td>
                                         </tr>
                                       );
                                     })}
@@ -1265,7 +1193,6 @@ function App() {
                                 {!schemaView[file.id] && !showAllFields[file.id] && needsAttentionCount > 0 && needsAttentionCount < total && <button className="show-all-toggle" onClick={() => toggleShowAll(file.id)}>Show only {needsAttentionCount} fields needing review</button>}
                                 {!schemaView[file.id] && showAllFields[file.id] && <button className="show-all-toggle" onClick={() => toggleShowAll(file.id)}>Show all {total} fields</button>}
                               </div>
-                              {!schemaView[file.id] && <button className="btn btn-ghost btn-sm" onClick={() => approveAllInFile(file.id)}><CheckCircleIc /> Approve All</button>}
                             </div>
                           </div>
                         )}
