@@ -1,0 +1,1407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HeyDonto — Mapping Profile Setup</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    /* ── Design Tokens ────────────────────────────── */
+    :root {
+      /* Colors – Primary */
+      --primary: #0891b2;
+      --primary-hover: #0e7490;
+      --primary-light: rgba(8, 145, 178, 0.08);
+      --primary-ring: rgba(8, 145, 178, 0.18);
+
+      /* Colors – Semantic */
+      --success: #10b981;
+      --success-light: #dcfce7;
+      --success-border: #bbf7d0;
+      --success-text: #166534;
+      --warning: #f59e0b;
+      --warning-light: #fef3c7;
+      --warning-border: #fde68a;
+      --warning-text: #92400e;
+      --error: #ef4444;
+      --error-light: #fee2e2;
+
+      /* Colors – Neutrals */
+      --gray-50: #fafbfc;
+      --gray-100: #f5f7fa;
+      --gray-150: #f0f1f3;
+      --gray-200: #e5e7eb;
+      --gray-300: #d1d5db;
+      --gray-400: #9ca3af;
+      --gray-500: #6b7280;
+      --gray-600: #4b5563;
+      --gray-700: #374151;
+      --gray-900: #1a1a1a;
+      --white: #fff;
+
+      /* Spacing – 8pt grid */
+      --sp-1: 4px;
+      --sp-2: 8px;
+      --sp-3: 12px;
+      --sp-4: 16px;
+      --sp-5: 20px;
+      --sp-6: 24px;
+      --sp-8: 32px;
+      --sp-10: 40px;
+      --sp-12: 48px;
+      --sp-16: 64px;
+
+      /* Typography */
+      --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      --font-mono: 'SF Mono', 'Fira Code', 'Courier New', monospace;
+      --text-xs: 11px;
+      --text-sm: 12px;
+      --text-base: 13px;
+      --text-md: 14px;
+      --text-lg: 15px;
+      --text-xl: 18px;
+      --text-2xl: 24px;
+      --leading: 1.5;
+      --leading-tight: 1.3;
+
+      /* Shadows */
+      --shadow-xs: 0 1px 2px rgba(0,0,0,0.04);
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+      --shadow-md: 0 4px 12px rgba(0,0,0,0.07), 0 1px 3px rgba(0,0,0,0.04);
+      --shadow-lg: 0 8px 24px rgba(0,0,0,0.09), 0 2px 6px rgba(0,0,0,0.04);
+
+      /* Radii */
+      --radius-sm: 6px;
+      --radius-md: 8px;
+      --radius-lg: 12px;
+      --radius-full: 9999px;
+
+      /* Transitions */
+      --ease: cubic-bezier(0.4, 0, 0.2, 1);
+      --duration: 0.2s;
+      --duration-fast: 0.15s;
+    }
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: var(--font);
+      background: var(--gray-100); color: var(--gray-900);
+      -webkit-font-smoothing: antialiased; min-height: 100vh;
+      line-height: var(--leading);
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* ── Focus states ─────────────────────────────── */
+    *:focus-visible {
+      outline: 2px solid var(--primary);
+      outline-offset: 2px;
+    }
+    button:focus-visible {
+      outline: 2px solid var(--primary);
+      outline-offset: 2px;
+      box-shadow: 0 0 0 4px var(--primary-ring);
+    }
+
+    /* ── Top bar ─────────────────────────────────── */
+    .topbar {
+      position: sticky; top: 0; z-index: 100;
+      background: var(--white);
+      box-shadow: 0 1px 0 rgba(0,0,0,0.06);
+      padding: 0 var(--sp-8); height: 56px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .topbar-left { display: flex; align-items: center; gap: var(--sp-3); }
+    .topbar-back {
+      display: flex; align-items: center; gap: var(--sp-1);
+      font-size: var(--text-base); font-weight: 500; color: var(--gray-500);
+      background: none; border: none; cursor: pointer;
+      padding: var(--sp-2) var(--sp-3); border-radius: var(--radius-sm);
+      transition: all var(--duration-fast) var(--ease); font-family: inherit;
+    }
+    .topbar-back:hover { background: var(--gray-150); color: var(--gray-700); }
+    .topbar-divider { width: 1px; height: 20px; background: var(--gray-200); }
+    .topbar-title { font-size: var(--text-lg); font-weight: 600; color: var(--gray-900); letter-spacing: -0.01em; }
+    .topbar-right { display: flex; align-items: center; gap: var(--sp-3); }
+    .draft-indicator { font-size: var(--text-xs); color: var(--gray-500); display: flex; align-items: center; gap: var(--sp-1); }
+    .draft-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--warning); }
+
+    /* ── Buttons ──────────────────────────────────── */
+    .btn {
+      font-family: inherit; font-size: var(--text-base); font-weight: 500;
+      padding: 9px 18px; border-radius: var(--radius-md); cursor: pointer;
+      display: inline-flex; align-items: center; gap: var(--sp-2);
+      transition: all var(--duration) var(--ease); border: none;
+      min-height: 36px;
+    }
+    .btn-primary {
+      background: var(--primary); color: var(--white);
+      box-shadow: 0 1px 2px rgba(8,145,178,0.2);
+    }
+    .btn-primary:hover {
+      background: var(--primary-hover);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(8,145,178,0.25);
+    }
+    .btn-primary:active { transform: translateY(0); box-shadow: 0 1px 2px rgba(8,145,178,0.2); }
+    .btn-primary:disabled { opacity: .45; cursor: not-allowed; transform: none; box-shadow: none; }
+    .btn-secondary {
+      background: var(--white); color: var(--gray-600);
+      border: 1px solid var(--gray-300);
+    }
+    .btn-secondary:hover { border-color: var(--primary); color: var(--primary); }
+    .btn-secondary:active { background: var(--gray-50); }
+    .btn-ghost {
+      background: none; color: var(--gray-500);
+      border: 1px solid transparent;
+    }
+    .btn-ghost:hover { background: var(--gray-150); color: var(--gray-700); }
+    .btn-ghost:active { background: var(--gray-200); }
+    .btn-sm { padding: 6px 12px; font-size: var(--text-sm); border-radius: var(--radius-sm); min-height: 30px; }
+
+    /* ── Stepper ──────────────────────────────────── */
+    .stepper-bar {
+      background: var(--white);
+      box-shadow: 0 1px 0 rgba(0,0,0,0.05);
+      padding: var(--sp-4) var(--sp-8);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .stepper-item { display: flex; align-items: center; gap: var(--sp-2); cursor: default; padding: var(--sp-1) 0; }
+    .stepper-item.clickable { cursor: pointer; }
+    .stepper-item.clickable:hover .stepper-circle { box-shadow: 0 0 0 3px var(--primary-ring); }
+    .stepper-circle {
+      width: 26px; height: 26px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: var(--text-xs); font-weight: 600; transition: all var(--duration) var(--ease); flex-shrink: 0;
+    }
+    .stepper-circle.completed { background: var(--primary); color: var(--white); }
+    .stepper-circle.active { background: var(--primary); color: var(--white); box-shadow: 0 0 0 3px var(--primary-ring); }
+    .stepper-circle.inactive { background: var(--gray-200); color: var(--gray-500); }
+    .stepper-label { font-size: var(--text-sm); font-weight: 500; white-space: nowrap; }
+    .stepper-label.completed { color: var(--primary); }
+    .stepper-label.active { color: var(--primary); font-weight: 600; }
+    .stepper-label.inactive { color: var(--gray-500); }
+    .stepper-line { width: 40px; height: 2px; margin: 0 var(--sp-3); border-radius: 1px; transition: background var(--duration) var(--ease); }
+    .stepper-line.completed { background: var(--primary); }
+    .stepper-line.inactive { background: var(--gray-200); }
+
+    /* ── Page body ────────────────────────────────── */
+    .page-body { max-width: 1120px; margin: 0 auto; padding: var(--sp-8); }
+    .page-body.narrow { max-width: 720px; }
+    .page-body.wide { max-width: 1280px; padding: var(--sp-6) var(--sp-8); }
+
+    /* ── Footer bar ──────────────────────────────── */
+    .footer-bar {
+      position: sticky; bottom: 0; z-index: 100;
+      background: var(--white);
+      box-shadow: 0 -1px 0 rgba(0,0,0,0.06);
+      padding: var(--sp-4) var(--sp-8);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .footer-left { display: flex; align-items: center; gap: var(--sp-2); }
+    .footer-right { display: flex; align-items: center; gap: var(--sp-3); }
+
+    /* ── Upload (Step 1) ─────────────────────────── */
+    .upload-zone {
+      border: 1.5px dashed var(--gray-300); border-radius: var(--radius-lg);
+      padding: var(--sp-16) var(--sp-8); text-align: center;
+      cursor: pointer; transition: all var(--duration) var(--ease);
+      background: var(--gray-50);
+    }
+    .upload-zone:hover {
+      border-color: var(--primary); background: rgba(8, 145, 178, 0.03);
+      box-shadow: 0 0 0 4px var(--primary-light);
+    }
+    .upload-icon {
+      width: 52px; height: 52px; border-radius: var(--radius-lg);
+      background: var(--primary); color: var(--white);
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto var(--sp-4);
+    }
+    .upload-title { font-size: var(--text-lg); font-weight: 600; margin-bottom: var(--sp-1); }
+    .upload-sub { font-size: var(--text-base); color: var(--gray-500); margin-bottom: var(--sp-2); }
+    .upload-formats { font-size: var(--text-sm); color: var(--gray-400); }
+
+    .file-list { margin-top: var(--sp-6); }
+    .file-list-title { font-size: var(--text-xs); font-weight: 600; color: var(--gray-500); text-transform: uppercase; letter-spacing: .5px; margin-bottom: var(--sp-3); }
+    .file-item {
+      display: flex; align-items: center; gap: var(--sp-3);
+      padding: var(--sp-3) var(--sp-4); background: var(--white);
+      border: 1px solid var(--gray-200); border-radius: var(--radius-md);
+      margin-bottom: var(--sp-2); transition: all var(--duration-fast) var(--ease);
+    }
+    .file-item:hover { box-shadow: var(--shadow-sm); border-color: var(--gray-300); }
+    .file-icon-sm {
+      width: 36px; height: 36px; border-radius: var(--radius-sm);
+      display: flex; align-items: center; justify-content: center; font-size: var(--text-base);
+    }
+    .file-icon-sm.csv { background: var(--success-light); color: #16a34a; }
+    .file-icon-sm.json { background: var(--warning-light); color: #d97706; }
+    .file-icon-sm.xlsx { background: #dbeafe; color: #2563eb; }
+    .file-info { flex: 1; }
+    .file-name { font-size: var(--text-base); font-weight: 500; }
+    .file-size { font-size: var(--text-xs); color: var(--gray-500); }
+    .file-remove {
+      width: 32px; height: 32px; border-radius: var(--radius-sm);
+      border: none; background: none; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--gray-400); transition: all var(--duration-fast) var(--ease);
+    }
+    .file-remove:hover { background: var(--error-light); color: var(--error); }
+
+    .detected-source {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-top: var(--sp-4); padding: var(--sp-3) var(--sp-4);
+      background: #f0fdf4; border: 1px solid var(--success-border); border-radius: var(--radius-md);
+    }
+    .detected-left { display: flex; align-items: center; gap: var(--sp-2); }
+    .detected-label { font-size: var(--text-base); color: var(--success-text); }
+    .detected-value { font-size: var(--text-base); font-weight: 600; color: var(--success-text); }
+    .detected-select {
+      padding: var(--sp-2) var(--sp-3); border-radius: var(--radius-sm);
+      border: 1px solid var(--success-border); background: var(--white);
+      font-size: var(--text-sm); color: var(--success-text); font-family: inherit;
+      cursor: pointer; transition: all var(--duration-fast) var(--ease);
+    }
+    .detected-select:hover { border-color: #86efac; }
+
+    /* ── Step 2: Classification ──────────────────── */
+    .review-header { margin-bottom: var(--sp-4); }
+    .review-title { font-size: var(--text-xl); font-weight: 600; margin-bottom: var(--sp-1); letter-spacing: -0.01em; }
+    .review-sub { font-size: var(--text-base); color: var(--gray-500); }
+
+    .parse-banner {
+      display: flex; align-items: center; gap: var(--sp-2);
+      padding: var(--sp-3) var(--sp-4); margin-bottom: var(--sp-4);
+      border-radius: var(--radius-md); font-size: var(--text-sm); font-weight: 500;
+    }
+    .parse-banner.clean { background: #f0fdf4; border: 1px solid var(--success-border); color: var(--success-text); }
+    .parse-banner.issues { background: #fffbeb; border: 1px solid var(--warning-border); color: var(--warning-text); }
+
+    /* Search & filter bar */
+    .search-row {
+      display: flex; align-items: center; gap: var(--sp-3);
+      margin-bottom: var(--sp-3);
+    }
+    .search-wrap {
+      flex: 1; position: relative;
+    }
+    .search-wrap .search-icon {
+      position: absolute; left: var(--sp-3); top: 50%; transform: translateY(-50%);
+      color: var(--gray-400); pointer-events: none; display: flex;
+    }
+    .search-input {
+      width: 100%; padding: var(--sp-2) var(--sp-8) var(--sp-2) 36px;
+      font-size: var(--text-base); font-family: inherit;
+      border: 1px solid var(--gray-200); border-radius: var(--radius-md);
+      background: var(--white); color: var(--gray-700);
+      transition: all var(--duration-fast) var(--ease);
+    }
+    .search-input:hover { border-color: var(--gray-300); }
+    .search-input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-ring); }
+    .search-input::placeholder { color: var(--gray-400); }
+    .search-clear {
+      position: absolute; right: var(--sp-2); top: 50%; transform: translateY(-50%);
+      width: 24px; height: 24px; border-radius: var(--radius-sm);
+      border: none; background: none; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--gray-400); transition: all var(--duration-fast) var(--ease);
+    }
+    .search-clear:hover { background: var(--gray-150); color: var(--gray-600); }
+    .status-select {
+      padding: var(--sp-2) var(--sp-8) var(--sp-2) var(--sp-3);
+      font-size: var(--text-sm); font-family: inherit; font-weight: 500;
+      border: 1px solid var(--gray-200); border-radius: var(--radius-md);
+      background: var(--white); color: var(--gray-600); cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2'%3E%3Cpolyline points='6,9 12,15 18,9'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 10px center;
+      transition: all var(--duration-fast) var(--ease);
+      white-space: nowrap;
+    }
+    .status-select:hover { border-color: var(--gray-300); }
+    .status-select:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-ring); }
+    .results-count {
+      font-size: var(--text-xs); color: var(--gray-400); margin-bottom: var(--sp-3);
+    }
+    .results-count strong { font-weight: 600; color: var(--gray-500); }
+    .empty-state {
+      text-align: center; padding: var(--sp-12) var(--sp-6);
+    }
+    .empty-state-text { font-size: var(--text-base); color: var(--gray-500); margin-bottom: var(--sp-4); }
+    .empty-state-btn {
+      font-family: inherit; font-size: var(--text-sm); font-weight: 500;
+      padding: var(--sp-2) var(--sp-4); border-radius: var(--radius-md);
+      border: 1px solid var(--gray-200); background: var(--white);
+      color: var(--primary); cursor: pointer;
+      transition: all var(--duration-fast) var(--ease);
+    }
+    .empty-state-btn:hover { border-color: var(--primary); background: var(--primary-light); }
+
+    .stat-cards { display: flex; gap: var(--sp-3); margin-bottom: var(--sp-4); }
+    .stat-card {
+      flex: 1; padding: var(--sp-3) var(--sp-4);
+      background: var(--white); border: 1.5px solid transparent; border-radius: var(--radius-md);
+      cursor: pointer; transition: all var(--duration) var(--ease);
+      box-shadow: var(--shadow-xs);
+    }
+    .stat-card:hover { box-shadow: var(--shadow-sm); }
+    .stat-card.active { box-shadow: var(--shadow-md); }
+    .stat-card.all.active { border-color: var(--primary); background: rgba(8,145,178,0.03); }
+    .stat-card.high.active { border-color: var(--success); background: rgba(16,185,129,0.03); }
+    .stat-card.med.active { border-color: var(--warning); background: rgba(245,158,11,0.03); }
+    .stat-card.low.active { border-color: var(--error); background: rgba(239,68,68,0.03); }
+    .stat-value { font-size: var(--text-xl); font-weight: 700; margin-bottom: 2px; display: flex; align-items: center; gap: var(--sp-2); }
+    .stat-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+    .stat-dot.all { background: var(--primary); }
+    .stat-dot.high { background: var(--success); }
+    .stat-dot.med { background: var(--warning); }
+    .stat-dot.low { background: var(--error); }
+    .stat-label { font-size: var(--text-xs); font-weight: 500; color: var(--gray-500); text-transform: uppercase; letter-spacing: .3px; }
+
+    .warning-bar {
+      display: flex; align-items: center; gap: var(--sp-3);
+      padding: var(--sp-3) var(--sp-4); margin-bottom: var(--sp-4);
+      background: #fffbeb; border: 1px solid var(--warning-border); border-radius: var(--radius-md);
+      font-size: var(--text-sm); color: var(--warning-text);
+    }
+    .warning-bar label {
+      margin-left: auto; display: flex; align-items: center; gap: var(--sp-2);
+      font-size: var(--text-xs); font-weight: 500; cursor: pointer; white-space: nowrap;
+    }
+    /* Toggle switch */
+    .toggle-switch {
+      position: relative; width: 34px; height: 20px; flex-shrink: 0;
+    }
+    .toggle-switch input { opacity: 0; width: 0; height: 0; position: absolute; }
+    .toggle-track {
+      position: absolute; inset: 0; border-radius: 10px;
+      background: var(--gray-300); transition: background var(--duration-fast) var(--ease);
+      cursor: pointer;
+    }
+    .toggle-track::after {
+      content: ''; position: absolute; left: 2px; top: 2px;
+      width: 16px; height: 16px; border-radius: 50%;
+      background: var(--white); box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+      transition: transform var(--duration-fast) var(--ease);
+    }
+    .toggle-switch input:checked + .toggle-track { background: var(--primary); }
+    .toggle-switch input:checked + .toggle-track::after { transform: translateX(14px); }
+
+    /* File rows */
+    .file-row-list { display: flex; flex-direction: column; gap: var(--sp-2); }
+    .file-row-list-header {
+      display: grid;
+      grid-template-columns: 18px 30px 1fr 100px 72px 52px 58px 64px;
+      align-items: center; gap: var(--sp-3);
+      padding: var(--sp-1) var(--sp-4);
+      font-size: 10px; font-weight: 600; color: var(--gray-400);
+      text-transform: uppercase; letter-spacing: .5px;
+    }
+    .file-row-list-header span:nth-child(n+4) { text-align: right; }
+    .file-row {
+      background: var(--white); border: 1px solid var(--gray-200); border-radius: var(--radius-md);
+      overflow: hidden; transition: all var(--duration) var(--ease);
+      box-shadow: var(--shadow-xs);
+    }
+    .file-row:hover { box-shadow: var(--shadow-sm); border-color: var(--gray-300); }
+    .file-row.expanded { border-color: var(--primary); box-shadow: var(--shadow-md); }
+    .file-row-header {
+      display: grid;
+      grid-template-columns: 18px 30px 1fr 100px 72px 52px 58px 64px;
+      align-items: center; gap: var(--sp-3);
+      padding: var(--sp-3) var(--sp-4); cursor: pointer; user-select: none;
+      transition: background var(--duration-fast) var(--ease);
+    }
+    .file-row-header:hover { background: var(--gray-50); }
+    .file-row-chevron {
+      width: 18px; height: 18px;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--gray-400); transition: transform var(--duration) var(--ease); flex-shrink: 0;
+    }
+    .file-row-chevron.open { transform: rotate(90deg); color: var(--primary); }
+    .file-row-icon {
+      width: 30px; height: 30px; border-radius: var(--radius-sm);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; font-size: var(--text-sm);
+    }
+    .file-row-icon.csv { background: var(--success-light); color: #16a34a; }
+    .file-row-icon.json { background: var(--warning-light); color: #d97706; }
+    .file-row-icon.xlsx { background: #dbeafe; color: #2563eb; }
+    .file-row-name { font-size: var(--text-base); font-weight: 500; color: var(--gray-900); min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .file-row-col { display: flex; align-items: center; justify-content: flex-end; }
+    .role-tag {
+      display: inline-flex; padding: 3px 10px; border-radius: var(--radius-sm);
+      font-size: var(--text-xs); font-weight: 600;
+      background: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe;
+    }
+    .conf-inline { display: flex; align-items: center; gap: var(--sp-1); font-size: var(--text-xs); font-weight: 600; }
+    .conf-inline.high { color: var(--success); }
+    .conf-inline.medium { color: var(--warning); }
+    .conf-inline.low { color: var(--error); }
+    .meta-tag {
+      font-size: 10px; font-weight: 600; color: var(--gray-500);
+      background: var(--gray-150); padding: 2px 6px; border-radius: 3px;
+      text-transform: uppercase;
+    }
+    .shape-tag { font-size: 10px; color: var(--gray-500); }
+    .issues-tag {
+      display: inline-flex; align-items: center; gap: 3px;
+      font-size: var(--text-xs); font-weight: 600; padding: 2px 8px;
+      border-radius: var(--radius-sm);
+    }
+    .issues-tag.clean { background: var(--success-light); color: var(--success-text); }
+    .issues-tag.warn { background: var(--warning-light); color: #b45309; }
+
+    /* Expanded body */
+    .file-row-body { border-top: 1px solid var(--gray-200); }
+    .file-row-body-inner { padding: var(--sp-4); }
+    .file-meta-pills { display: flex; align-items: center; gap: var(--sp-2); margin-bottom: var(--sp-3); }
+    .meta-pill { font-size: 10px; color: var(--gray-500); background: var(--gray-150); padding: 3px 8px; border-radius: var(--radius-sm); }
+
+    /* Fields table */
+    .fields-table { width: 100%; border-collapse: collapse; }
+    .fields-table th {
+      text-align: left; padding: var(--sp-3) var(--sp-4);
+      font-size: 10px; font-weight: 600; color: var(--gray-500);
+      text-transform: uppercase; letter-spacing: .5px;
+      background: var(--gray-50); border-bottom: 1px solid var(--gray-200);
+      position: sticky; top: 0; z-index: 1;
+    }
+    .fields-table td {
+      padding: var(--sp-3) var(--sp-4); font-size: var(--text-sm);
+      border-bottom: 1px solid var(--gray-150); vertical-align: middle;
+    }
+    .fields-table tr:last-child td { border-bottom: none; }
+    .fields-table tbody tr:nth-child(even) td { background: var(--gray-50); }
+    .fields-table tbody tr:hover td { background: var(--primary-light); }
+    .fields-table tbody tr.needs-attention td { background: #fffbeb; }
+    .fields-table tbody tr.needs-attention td:first-child { box-shadow: inset 3px 0 0 var(--warning); }
+    .fields-table tbody tr.needs-attention:hover td { background: #fef3c7; }
+
+    .field-name { font-family: var(--font-mono); font-size: var(--text-xs); font-weight: 500; color: var(--gray-700); }
+    .semantic-label { font-weight: 500; color: var(--primary); font-size: var(--text-sm); }
+    .code-badge {
+      display: inline-flex; padding: 2px 7px; border-radius: var(--radius-sm);
+      font-size: 9px; font-weight: 600; text-transform: uppercase;
+      background: var(--gray-150); color: var(--gray-600);
+    }
+    .code-badge.none { background: var(--gray-50); color: var(--gray-400); border: 1px dashed var(--gray-300); }
+    .sample-chip {
+      display: inline-block; padding: 1px 7px;
+      border-radius: var(--radius-full); border: 1px solid var(--gray-200); background: var(--gray-50);
+      font-family: var(--font-mono); font-size: 10px; color: var(--gray-600);
+      max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .conf-value {
+      font-size: var(--text-sm); font-weight: 600;
+      font-variant-numeric: tabular-nums;
+    }
+    .conf-value.high { color: var(--success); }
+    .conf-value.medium { color: var(--warning); }
+    .conf-value.low { color: var(--error); }
+
+    .status-tag {
+      display: inline-flex; align-items: center; gap: 3px;
+      padding: 3px 8px; border-radius: var(--radius-sm); font-size: var(--text-xs); font-weight: 500;
+    }
+    .status-tag.approved { background: var(--success-light); color: var(--success-text); }
+    .status-tag.review { background: var(--warning-light); color: var(--warning-text); }
+    .status-tag.abstained { background: var(--gray-150); color: var(--gray-500); }
+
+    .action-btns { display: flex; gap: var(--sp-1); }
+    .action-btn {
+      padding: 4px 10px; border-radius: var(--radius-sm);
+      border: 1px solid var(--gray-200); background: var(--white);
+      font-size: var(--text-xs); font-weight: 600; cursor: pointer;
+      transition: all var(--duration-fast) var(--ease); color: var(--gray-500); font-family: inherit;
+    }
+    .action-btn:hover { border-color: var(--primary); color: var(--primary); background: var(--primary-light); }
+    .action-btn.approve { border-color: var(--success-border); color: #16a34a; }
+    .action-btn.approve:hover { background: #f0fdf4; }
+    .action-btn.needs-review { border-color: var(--primary); color: var(--primary); background: var(--primary-light); }
+
+    .file-row-footer {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: var(--sp-2) var(--sp-4); background: var(--gray-50); border-top: 1px solid var(--gray-150);
+    }
+    .show-all-toggle {
+      font-family: inherit; font-size: var(--text-xs); font-weight: 500;
+      color: var(--primary); background: none; border: none;
+      cursor: pointer; padding: var(--sp-1); transition: color var(--duration-fast) var(--ease);
+    }
+    .show-all-toggle:hover { color: var(--primary-hover); }
+
+    /* ── Forms (Step 3) ──────────────────────────── */
+    .form-section { margin-bottom: var(--sp-8); }
+    .form-section:last-child { margin-bottom: 0; }
+    .form-label { font-size: var(--text-base); font-weight: 600; color: var(--gray-700); margin-bottom: var(--sp-2); display: block; }
+    .form-hint { font-size: var(--text-sm); color: var(--gray-500); margin-top: var(--sp-2); }
+    .form-select {
+      width: 100%; padding: var(--sp-3) 36px var(--sp-3) var(--sp-4);
+      font-size: var(--text-md); border: 1px solid var(--gray-300); border-radius: var(--radius-md);
+      background: var(--white); color: var(--gray-700); cursor: pointer;
+      appearance: none; font-family: inherit;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2'%3E%3Cpolyline points='6,9 12,15 18,9'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 14px center;
+      transition: all var(--duration-fast) var(--ease);
+    }
+    .form-select:hover { border-color: var(--primary); }
+    .form-select:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-ring); }
+    .form-input {
+      width: 100%; padding: var(--sp-3) var(--sp-4);
+      font-size: var(--text-md); border: 1px solid var(--gray-300); border-radius: var(--radius-md);
+      background: var(--white); color: var(--gray-700); font-family: inherit;
+      transition: all var(--duration-fast) var(--ease);
+    }
+    .form-input:hover { border-color: var(--primary); }
+    .form-input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-ring); }
+    .form-input::placeholder { color: var(--gray-400); }
+
+    /* ── Summary cards ───────────────────────────── */
+    .summary-card {
+      background: var(--white); border: none; border-radius: var(--radius-lg);
+      overflow: hidden; margin-bottom: var(--sp-5);
+      box-shadow: var(--shadow-sm);
+    }
+    .summary-card:last-child { margin-bottom: 0; }
+    .summary-card-header {
+      display: flex; align-items: center; gap: var(--sp-2);
+      padding: var(--sp-4) var(--sp-5); background: var(--gray-50); border-bottom: 1px solid var(--gray-150);
+    }
+    .summary-card-icon {
+      width: 26px; height: 26px; border-radius: var(--radius-sm);
+      background: var(--primary-light); color: var(--primary);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .summary-card-title { font-size: var(--text-base); font-weight: 600; }
+    .summary-row {
+      display: flex; align-items: flex-start;
+      padding: var(--sp-3) var(--sp-5); border-bottom: 1px solid var(--gray-150);
+    }
+    .summary-row:last-child { border-bottom: none; }
+    .summary-label { font-size: var(--text-sm); color: var(--gray-500); width: 160px; flex-shrink: 0; padding-top: 1px; }
+    .summary-value { font-size: var(--text-base); font-weight: 500; color: var(--gray-900); flex: 1; }
+
+    /* ── Graph placeholder (Step 4) ─────────────── */
+    .graph-placeholder {
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      padding: var(--sp-16) var(--sp-6); text-align: center;
+    }
+    .graph-placeholder-icon {
+      width: 80px; height: 80px; border-radius: var(--radius-full);
+      background: var(--primary-light); color: var(--primary);
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: var(--sp-6);
+    }
+    .graph-placeholder-title {
+      font-size: var(--text-xl); font-weight: 600; color: var(--gray-900);
+      margin-bottom: var(--sp-2); letter-spacing: -0.01em;
+    }
+    .graph-placeholder-sub {
+      font-size: var(--text-base); color: var(--gray-500);
+      max-width: 420px; line-height: var(--leading);
+    }
+
+    /* ── States ───────────────────────────────────── */
+    .state-box { text-align: center; padding: var(--sp-16) var(--sp-6); }
+    .spinner {
+      width: 40px; height: 40px;
+      border: 3px solid var(--gray-200); border-top-color: var(--primary);
+      border-radius: 50%; animation: spin .8s linear infinite;
+      margin: 0 auto var(--sp-5);
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .state-title { font-size: var(--text-lg); font-weight: 600; margin-bottom: var(--sp-2); }
+    .state-sub { font-size: var(--text-base); color: var(--gray-500); }
+    .success-circle {
+      width: 56px; height: 56px; border-radius: 50%;
+      background: var(--success); color: var(--white);
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto var(--sp-5);
+      box-shadow: 0 4px 16px rgba(16,185,129,0.25);
+    }
+    .generate-area { text-align: center; padding: var(--sp-8) 0; }
+    .generate-title { font-size: var(--text-lg); font-weight: 600; margin-bottom: var(--sp-2); }
+    .generate-sub { font-size: var(--text-base); color: var(--gray-500); margin-bottom: var(--sp-6); }
+    .btn-generate {
+      font-family: inherit; font-size: var(--text-lg); font-weight: 600;
+      padding: var(--sp-4) var(--sp-10); border-radius: var(--radius-lg); border: none;
+      background: var(--primary); color: var(--white);
+      cursor: pointer; display: inline-flex; align-items: center; gap: var(--sp-2);
+      transition: all var(--duration) var(--ease);
+      box-shadow: 0 2px 8px rgba(8,145,178,0.2);
+    }
+    .btn-generate:hover {
+      background: var(--primary-hover);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(8,145,178,0.3);
+    }
+    .btn-generate:active { transform: translateY(0); box-shadow: 0 2px 8px rgba(8,145,178,0.2); }
+
+    .preview-code {
+      font-family: var(--font-mono); font-size: 12px;
+      color: var(--primary); background: var(--primary-light); padding: 2px 6px; border-radius: 3px;
+    }
+    .section-heading { font-size: var(--text-xl); font-weight: 600; color: var(--gray-900); margin-bottom: var(--sp-1); letter-spacing: -0.01em; }
+    .section-sub { font-size: var(--text-base); color: var(--gray-500); margin-bottom: var(--sp-6); }
+
+    /* ── Schema viewer ───────────────────────────── */
+    .schema-viewer {
+      background: var(--gray-50); border: 1px solid var(--gray-200);
+      border-radius: var(--radius-md);
+      padding: var(--sp-4) var(--sp-5); overflow-x: auto;
+      font-family: var(--font-mono); font-size: 11px;
+      line-height: 1.7; color: var(--gray-700);
+    }
+    .schema-viewer .json-key { color: #0e7490; }
+    .schema-viewer .json-string { color: #16a34a; }
+    .schema-viewer .json-type { color: #c2410c; }
+    .schema-viewer .json-bracket { color: var(--gray-400); }
+    .schema-viewer .json-comment { color: var(--gray-400); font-style: italic; }
+    .schema-label {
+      font-size: 10px; font-weight: 600; color: var(--gray-500);
+      text-transform: uppercase; letter-spacing: .4px;
+      margin-bottom: 8px;
+    }
+    .view-toggle-bar {
+      display: flex; align-items: center; gap: 0; margin-bottom: 12px;
+    }
+    .view-tab {
+      font-family: inherit; font-size: 11px; font-weight: 600;
+      padding: 5px 14px; border: 1px solid var(--gray-200); background: var(--white);
+      color: var(--gray-500); cursor: pointer; transition: all var(--duration-fast) var(--ease);
+      display: inline-flex; align-items: center; gap: 5px;
+    }
+    .view-tab:first-child { border-radius: 6px 0 0 6px; }
+    .view-tab:last-child { border-radius: 0 6px 6px 0; border-left: none; }
+    .view-tab.active { background: #0891b2; color: #fff; border-color: #0891b2; }
+    .view-tab.active + .view-tab { border-left-color: #0891b2; }
+  </style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState, useMemo } = React;
+
+/* ── Icons ──────────────────────────────────────── */
+const ChevronLeft = () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="15,18 9,12 15,6"/></svg>;
+const ChevronRight = () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="9,6 15,12 9,18"/></svg>;
+const CheckSm = (p) => <svg {...p} width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><polyline points="20,6 9,17 4,12"/></svg>;
+const CheckLg = () => <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="20,6 9,17 4,12"/></svg>;
+const UploadIc = () => <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17,8 12,3 7,8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>;
+const FileIc = () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/></svg>;
+const XIc = () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>;
+const CheckCircleIc = () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22,4 12,14.01 9,11.01"/></svg>;
+const SparklesIc = () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 3l1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5L12 3z"/><path d="M5 19l.5 1.5L7 21l-1.5.5L5 23l-.5-1.5L3 21l1.5-.5L5 19z"/></svg>;
+const BrainIc = () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 4.5a2.5 2.5 0 00-4.96-.46 2.5 2.5 0 00-1.98 3 2.5 2.5 0 00-1.32 4.24 3 3 0 00.34 5.58 2.5 2.5 0 002.96 3.08A2.5 2.5 0 0012 19.5a2.5 2.5 0 004.96.44 2.5 2.5 0 002.96-3.08 3 3 0 00.34-5.58 2.5 2.5 0 00-1.32-4.24 2.5 2.5 0 00-1.98-3A2.5 2.5 0 0012 4.5"/></svg>;
+const SaveIc = () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17,21 17,13 7,13 7,21"/><polyline points="7,3 7,8 15,8"/></svg>;
+const CodeIc = () => <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="16,18 22,12 16,6"/><polyline points="8,6 2,12 8,18"/></svg>;
+const SearchIc = () => <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>;
+
+/* ── Options ────────────────────────────────────── */
+const pmsOptions = [
+  { value: 'OpenDental', label: 'OpenDental' },
+  { value: 'Dentrix', label: 'Dentrix' },
+  { value: 'Eaglesoft', label: 'Eaglesoft' },
+  { value: 'Curve', label: 'Curve' },
+  { value: 'Other', label: 'Other / Unknown' },
+];
+const standardOptions = [
+  { value: 'fhir-r4', label: 'FHIR R4' },
+  { value: 'fhir-r5', label: 'FHIR R5' },
+  { value: 'hl7-v2', label: 'HL7 v2.x' },
+  { value: 'x12-837', label: 'X12 837D' },
+  { value: 'x12-270', label: 'X12 270/271' },
+];
+const vocabOptions = [
+  { value: 'cdt', label: 'CDT (Dental Procedures)' },
+  { value: 'snodent', label: 'SNODENT (Dental Terminology)' },
+  { value: 'loinc', label: 'LOINC (Lab Observations)' },
+  { value: 'snomed', label: 'SNOMED CT (Clinical Terms)' },
+  { value: 'cpt', label: 'CPT (Medical Procedures)' },
+  { value: 'icd10', label: 'ICD-10 (Diagnoses)' },
+];
+
+/* ── Classified file data ─────────────────────────── */
+const classifiedFiles = [
+  {
+    id: 'f1', fileName: 'patients_export.csv', format: 'CSV', shape: 'tabular',
+    assignedRole: 'patients', confidence: 98, issues: 0,
+    fields: [
+      { id: 'p1', fieldName: 'patient_id', semanticLabel: 'Patient Identifier', ontology: 'fhir', ontologyCode: 'Patient.identifier', confidence: 98, status: 'approved', sample: 'PAT-12345' },
+      { id: 'p2', fieldName: 'first_name', semanticLabel: 'Patient Given Name', ontology: 'fhir', ontologyCode: 'Patient.name.given', confidence: 96, status: 'approved', sample: 'Sarah' },
+      { id: 'p3', fieldName: 'last_name', semanticLabel: 'Patient Family Name', ontology: 'fhir', ontologyCode: 'Patient.name.family', confidence: 97, status: 'approved', sample: 'Johnson' },
+      { id: 'p4', fieldName: 'dob', semanticLabel: 'Date of Birth', ontology: 'fhir', ontologyCode: 'Patient.birthDate', confidence: 94, status: 'approved', sample: '1985-03-22' },
+      { id: 'p5', fieldName: 'gender', semanticLabel: 'Administrative Gender', ontology: 'fhir', ontologyCode: 'Patient.gender', confidence: 91, status: 'approved', sample: 'female' },
+      { id: 'p6', fieldName: 'ssn_last4', semanticLabel: 'Partial SSN', ontology: 'none', ontologyCode: null, confidence: 72, status: 'review', sample: '4589' },
+      { id: 'p7', fieldName: 'zip_code', semanticLabel: 'Postal Code', ontology: 'fhir', ontologyCode: 'Address.postalCode', confidence: 93, status: 'approved', sample: '90210' },
+      { id: 'p8', fieldName: 'phone', semanticLabel: 'Contact Phone', ontology: 'fhir', ontologyCode: 'Patient.telecom', confidence: 90, status: 'approved', sample: '555-0134' },
+    ]
+  },
+  {
+    id: 'f2', fileName: 'encounters_2024.csv', format: 'CSV', shape: 'tabular',
+    assignedRole: 'encounters', confidence: 96, issues: 3,
+    fields: [
+      { id: 'e1', fieldName: 'visit_id', semanticLabel: 'Encounter Identifier', ontology: 'fhir', ontologyCode: 'Encounter.identifier', confidence: 96, status: 'approved', sample: 'VIS-8821' },
+      { id: 'e2', fieldName: 'visit_date', semanticLabel: 'Encounter Start', ontology: 'fhir', ontologyCode: 'Encounter.period.start', confidence: 93, status: 'approved', sample: '2024-01-15' },
+      { id: 'e3', fieldName: 'provider_id', semanticLabel: 'Practitioner Reference', ontology: 'fhir', ontologyCode: 'Encounter.participant', confidence: 88, status: 'approved', sample: 'PRV-441' },
+      { id: 'e4', fieldName: 'visit_type', semanticLabel: 'Encounter Type', ontology: 'fhir', ontologyCode: 'Encounter.type', confidence: 85, status: 'approved', sample: 'ROUTINE' },
+      { id: 'e5', fieldName: 'location_cd', semanticLabel: 'Service Location', ontology: 'fhir', ontologyCode: 'Encounter.location', confidence: 68, status: 'review', sample: 'LOC-3' },
+      { id: 'e6', fieldName: 'status_flag', semanticLabel: 'Unknown', ontology: 'none', ontologyCode: null, confidence: 35, status: 'abstained', sample: '1' },
+    ]
+  },
+  {
+    id: 'f3', fileName: 'procedures_jan.json', format: 'JSON', shape: 'object',
+    assignedRole: 'procedures', confidence: 95, issues: 0,
+    fields: [
+      { id: 'pr1', fieldName: 'proc_cd', semanticLabel: 'Procedure Code', ontology: 'cdt', ontologyCode: 'D1110', confidence: 95, status: 'approved', sample: 'D1110' },
+      { id: 'pr2', fieldName: 'proc_desc', semanticLabel: 'Procedure Description', ontology: 'cdt', ontologyCode: null, confidence: 90, status: 'approved', sample: 'Prophylaxis – Adult' },
+      { id: 'pr3', fieldName: 'tooth_num', semanticLabel: 'Tooth Number', ontology: 'snodent', ontologyCode: '1234', confidence: 87, status: 'approved', sample: '14' },
+      { id: 'pr4', fieldName: 'surface', semanticLabel: 'Tooth Surface', ontology: 'snodent', ontologyCode: null, confidence: 82, status: 'review', sample: 'MOD' },
+      { id: 'pr5', fieldName: 'proc_fee', semanticLabel: 'Procedure Fee', ontology: 'none', ontologyCode: null, confidence: 78, status: 'review', sample: '185.00' },
+      { id: 'pr6', fieldName: 'proc_date', semanticLabel: 'Procedure Date', ontology: 'fhir', ontologyCode: 'Procedure.performed', confidence: 92, status: 'approved', sample: '2024-01-15' },
+      { id: 'pr7', fieldName: 'dx_code', semanticLabel: 'Diagnosis Code', ontology: 'snomed', ontologyCode: '80967001', confidence: 89, status: 'approved', sample: '80967001' },
+    ]
+  },
+  {
+    id: 'f4', fileName: 'claims_q1.csv', format: 'CSV', shape: 'tabular',
+    assignedRole: 'claims', confidence: 100, issues: 0,
+    fields: [
+      { id: 'c1', fieldName: 'claim_id', semanticLabel: 'Claim Identifier', ontology: 'fhir', ontologyCode: 'Claim.identifier', confidence: 97, status: 'approved', sample: 'CLM-19923' },
+      { id: 'c2', fieldName: 'payer_id', semanticLabel: 'Insurer Reference', ontology: 'fhir', ontologyCode: 'Claim.insurer', confidence: 91, status: 'approved', sample: 'INS-Delta' },
+      { id: 'c3', fieldName: 'claim_status', semanticLabel: 'Claim Status', ontology: 'fhir', ontologyCode: 'Claim.status', confidence: 89, status: 'approved', sample: 'active' },
+      { id: 'c4', fieldName: 'billed_amt', semanticLabel: 'Total Billed', ontology: 'fhir', ontologyCode: 'Claim.total', confidence: 86, status: 'approved', sample: '450.00' },
+    ]
+  },
+  {
+    id: 'f5', fileName: 'lab_results.json', format: 'JSON', shape: 'object',
+    assignedRole: 'observations', confidence: 88, issues: 2,
+    fields: [
+      { id: 'o1', fieldName: 'lab_code', semanticLabel: 'Observation Code', ontology: 'loinc', ontologyCode: '2339-0', confidence: 88, status: 'approved', sample: '2339-0' },
+      { id: 'o2', fieldName: 'lab_result', semanticLabel: 'Observation Value', ontology: 'loinc', ontologyCode: null, confidence: 75, status: 'review', sample: '92' },
+      { id: 'o3', fieldName: 'lab_unit', semanticLabel: 'Value Unit', ontology: 'loinc', ontologyCode: null, confidence: 70, status: 'review', sample: 'mg/dL' },
+      { id: 'o4', fieldName: 'collected_dt', semanticLabel: 'Collection Date', ontology: 'fhir', ontologyCode: 'Observation.effective', confidence: 91, status: 'approved', sample: '2024-01-10' },
+    ]
+  },
+];
+
+/* ── Helpers ──────────────────────────────────────── */
+const confLevel = (c) => c >= 85 ? 'high' : c >= 65 ? 'medium' : 'low';
+const allFields = (files) => files.flatMap(f => f.fields);
+
+/* ═══════════════════════════════════════════════════
+   App
+   ═══════════════════════════════════════════════════ */
+function App() {
+  const [step, setStep] = useState(1);
+  const [highestStep, setHighestStep] = useState(1);
+
+  // Step 1
+  const [files, setFiles] = useState([]);
+  const [detectedPms, setDetectedPms] = useState('');
+
+  // Step 2
+  const [classifying, setClassifying] = useState(false);
+  const [classified, setClassified] = useState(false);
+  const [cFiles, setCFiles] = useState([]);
+  const [expanded, setExpanded] = useState({});
+  const [showAllFields, setShowAllFields] = useState({});
+  const [schemaView, setSchemaView] = useState({});
+  const [filter, setFilter] = useState('all');
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [search, setSearch] = useState('');
+  const [ackReview, setAckReview] = useState(false);
+
+  // Step 3
+  const [standard, setStandard] = useState('');
+  const [vocab, setVocab] = useState('');
+
+  // Step 4
+  const [generating, setGenerating] = useState(false);
+  const [generated, setGenerated] = useState(false);
+
+  // Step 5
+  const [profileName, setProfileName] = useState('');
+
+  const goStep = (n) => { if (n <= highestStep) setStep(n); };
+  const handleNext = () => {
+    const next = step + 1;
+    if (step === 1) { setStep(2); setHighestStep(h => Math.max(h, 2)); runClassification(); }
+    else if (step === 5 && !generated) return;
+    else if (next <= 6) { setStep(next); setHighestStep(h => Math.max(h, next)); }
+  };
+  const handleBack = () => { if (step > 1) setStep(step - 1); };
+
+  /* Step 1 */
+  const demoFiles = [
+    { name: 'patients_export.csv', size: '2.4 MB', type: 'csv' },
+    { name: 'encounters_2024.csv', size: '5.1 MB', type: 'csv' },
+    { name: 'procedures_jan.json', size: '1.8 MB', type: 'json' },
+    { name: 'claims_q1.csv', size: '892 KB', type: 'csv' },
+    { name: 'lab_results.json', size: '3.2 MB', type: 'json' },
+  ];
+  const addFile = () => {
+    const next = demoFiles[files.length % demoFiles.length];
+    setFiles(f => [...f, { id: Date.now(), ...next }]);
+    if (!detectedPms) setDetectedPms('OpenDental');
+  };
+  const removeFile = (id) => {
+    const nf = files.filter(f => f.id !== id); setFiles(nf);
+    if (!nf.length) setDetectedPms('');
+  };
+
+  /* Step 2 */
+  const runClassification = () => {
+    setClassifying(true);
+    setTimeout(() => { setClassifying(false); setClassified(true); setCFiles(JSON.parse(JSON.stringify(classifiedFiles))); }, 2000);
+  };
+  const toggleExpand = (id) => setExpanded(e => ({ ...e, [id]: !e[id] }));
+  const toggleShowAll = (id) => setShowAllFields(s => ({ ...s, [id]: !s[id] }));
+  const toggleSchemaView = (id) => setSchemaView(s => ({ ...s, [id]: !s[id] }));
+
+  /* Generate inferred schema JSON from classified fields */
+  const generateSchema = (file) => {
+    const typeMap = {
+      'Patient Identifier': 'string', 'Patient Given Name': 'string', 'Patient Family Name': 'string',
+      'Date of Birth': 'date', 'Administrative Gender': 'string', 'Partial SSN': 'string',
+      'Postal Code': 'string', 'Contact Phone': 'string',
+      'Encounter Identifier': 'string', 'Encounter Start': 'datetime', 'Practitioner Reference': 'string',
+      'Encounter Type': 'string', 'Service Location': 'string', 'Unknown': 'unknown',
+      'Procedure Code': 'string', 'Procedure Description': 'string', 'Tooth Number': 'integer',
+      'Tooth Surface': 'string', 'Procedure Fee': 'decimal', 'Procedure Date': 'date',
+      'Diagnosis Code': 'string',
+      'Claim Identifier': 'string', 'Insurer Reference': 'string', 'Claim Status': 'string',
+      'Total Billed': 'decimal',
+      'Observation Code': 'string', 'Observation Value': 'decimal', 'Value Unit': 'string',
+      'Collection Date': 'datetime',
+    };
+    const properties = {};
+    file.fields.forEach(f => {
+      const prop = { type: typeMap[f.semanticLabel] || 'string', semantic: f.semanticLabel };
+      if (f.ontologyCode) prop.binding = { system: f.ontology.toUpperCase(), code: f.ontologyCode };
+      if (f.confidence < 85) prop.confidence = f.confidence + '%';
+      properties[f.fieldName] = prop;
+    });
+    return {
+      $schema: 'https://heydonto.com/schemas/classified-object/v1',
+      role: file.assignedRole,
+      source: file.fileName,
+      format: file.format.toLowerCase(),
+      shape: file.shape,
+      fieldCount: file.fields.length,
+      properties,
+    };
+  };
+
+  /* Render JSON with syntax highlighting */
+  const renderJson = (obj, indent = 0) => {
+    const pad = '  '.repeat(indent);
+    const pad1 = '  '.repeat(indent + 1);
+    const entries = Object.entries(obj);
+    const lines = [];
+    lines.push(<span key="open" className="json-bracket">{'{'}</span>);
+    entries.forEach(([key, val], i) => {
+      const comma = i < entries.length - 1 ? ',' : '';
+      if (val === null) {
+        lines.push(<div key={key}>{pad1}<span className="json-key">"{key}"</span>: <span className="json-type">null</span>{comma}</div>);
+      } else if (typeof val === 'object' && !Array.isArray(val)) {
+        lines.push(<div key={key + '_open'}>{pad1}<span className="json-key">"{key}"</span>: <span className="json-bracket">{'{'}</span></div>);
+        Object.entries(val).forEach(([k2, v2], j, arr) => {
+          const c2 = j < arr.length - 1 ? ',' : '';
+          if (typeof v2 === 'object' && v2 !== null) {
+            const inner = Object.entries(v2).map(([k3, v3], m, a3) => `"${k3}": "${v3}"${m < a3.length - 1 ? ', ' : ''}`).join('');
+            lines.push(<div key={key + k2}>{pad1}{'  '}<span className="json-key">"{k2}"</span>: <span className="json-bracket">{'{ '}</span>{inner}<span className="json-bracket">{' }'}</span>{c2}</div>);
+          } else {
+            const isNum = typeof v2 === 'number';
+            lines.push(<div key={key + k2}>{pad1}{'  '}<span className="json-key">"{k2}"</span>: <span className={isNum ? 'json-type' : 'json-string'}>"{v2}"</span>{c2}</div>);
+          }
+        });
+        lines.push(<div key={key + '_close'}>{pad1}<span className="json-bracket">{'}'}</span>{comma}</div>);
+      } else if (typeof val === 'number') {
+        lines.push(<div key={key}>{pad1}<span className="json-key">"{key}"</span>: <span className="json-type">{val}</span>{comma}</div>);
+      } else {
+        lines.push(<div key={key}>{pad1}<span className="json-key">"{key}"</span>: <span className="json-string">"{val}"</span>{comma}</div>);
+      }
+    });
+    lines.push(<span key="close" className="json-bracket">{'}'}</span>);
+    return lines;
+  };
+  const approveField = (fId, fdId) => {
+    setCFiles(fs => fs.map(f => f.id === fId ? { ...f, fields: f.fields.map(fd => fd.id === fdId ? { ...fd, status: 'approved' } : fd) } : f));
+  };
+  const approveAllInFile = (fId) => {
+    setCFiles(fs => fs.map(f => f.id === fId ? { ...f, fields: f.fields.map(fd => ({ ...fd, status: 'approved' })) } : f));
+  };
+
+  const flat = useMemo(() => allFields(cFiles), [cFiles]);
+  const reviewCount = flat.filter(f => f.status === 'review').length;
+  const totalIssues = cFiles.reduce((s, f) => s + f.issues, 0);
+  const stats = useMemo(() => ({
+    all: flat.length, high: flat.filter(f => f.confidence >= 85).length,
+    med: flat.filter(f => f.confidence >= 65 && f.confidence < 85).length,
+    low: flat.filter(f => f.confidence < 65).length,
+  }), [flat]);
+
+  const filteredFiles = useMemo(() => {
+    let files = cFiles;
+
+    // Status filter
+    if (statusFilter !== 'all') {
+      files = files.map(f => ({
+        ...f, fields: f.fields.filter(fd => fd.status === statusFilter)
+      })).filter(f => f.fields.length > 0);
+    }
+
+    // Confidence filter (stat cards)
+    if (filter !== 'all') {
+      files = files.map(f => ({
+        ...f, fields: f.fields.filter(fd => {
+          if (filter === 'high') return fd.confidence >= 85;
+          if (filter === 'med') return fd.confidence >= 65 && fd.confidence < 85;
+          if (filter === 'low') return fd.confidence < 65;
+          return true;
+        })
+      })).filter(f => f.fields.length > 0);
+    }
+
+    // Search
+    if (search.trim()) {
+      const q = search.toLowerCase();
+      files = files.map(f => {
+        const fileMatch = f.fileName.toLowerCase().includes(q) || f.assignedRole.toLowerCase().includes(q);
+        if (fileMatch) return f;
+        const matchingFields = f.fields.filter(fd =>
+          fd.fieldName.toLowerCase().includes(q) ||
+          fd.semanticLabel.toLowerCase().includes(q) ||
+          (fd.ontologyCode && fd.ontologyCode.toLowerCase().includes(q)) ||
+          (fd.ontology && fd.ontology.toLowerCase().includes(q))
+        );
+        return matchingFields.length ? { ...f, fields: matchingFields } : null;
+      }).filter(Boolean);
+    }
+
+    return files;
+  }, [cFiles, filter, statusFilter, search]);
+
+  const filteredFieldCount = filteredFiles.reduce((s, f) => s + f.fields.length, 0);
+  const isFiltered = filter !== 'all' || statusFilter !== 'all' || search.trim();
+  const clearAllFilters = () => { setFilter('all'); setStatusFilter('all'); setSearch(''); };
+
+  /* Step 4 */
+  const handleGenerate = () => {
+    setGenerating(true);
+    setTimeout(() => {
+      setGenerating(false); setGenerated(true);
+      setProfileName(`${detectedPms} → ${standardOptions.find(s => s.value === standard)?.label || ''}`);
+    }, 1800);
+  };
+
+  const canNext = () => {
+    if (step === 1) return files.length > 0 && detectedPms;
+    if (step === 2) return classified && !classifying && (reviewCount === 0 || ackReview);
+    if (step === 3) return standard && vocab;
+    if (step === 4) return true;
+    if (step === 5) return generated;
+    return false;
+  };
+
+  const stepsConfig = [
+    { num: 1, label: 'Upload' }, { num: 2, label: 'Classify' },
+    { num: 3, label: 'Configure' }, { num: 4, label: 'Graph' }, { num: 5, label: 'Generate' }, { num: 6, label: 'Save' },
+  ];
+  const stepState = (n) => step > n ? 'completed' : step === n ? 'active' : 'inactive';
+
+  const getVisibleFields = (file) => {
+    if (showAllFields[file.id]) {
+      const needs = file.fields.filter(f => f.status === 'review' || f.status === 'abstained');
+      return needs.length > 0 ? needs : file.fields;
+    }
+    return file.fields;
+  };
+
+  return (
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+      {/* Top bar */}
+      <div className="topbar">
+        <div className="topbar-left">
+          <button className="topbar-back"><ChevronLeft /> Mapping Profiles</button>
+          <div className="topbar-divider" />
+          <span className="topbar-title">New Mapping Profile</span>
+        </div>
+        <div className="topbar-right">
+          <span className="draft-indicator"><span className="draft-dot" /> Draft</span>
+          <button className="btn btn-ghost btn-sm"><SaveIc /> Save Draft</button>
+        </div>
+      </div>
+
+      {/* Stepper */}
+      <div className="stepper-bar">
+        {stepsConfig.map((s, i) => {
+          const st = stepState(s.num);
+          const clickable = s.num <= highestStep && s.num !== step;
+          return (
+            <React.Fragment key={s.num}>
+              <div className={`stepper-item ${clickable ? 'clickable' : ''}`} onClick={() => clickable && goStep(s.num)}>
+                <div className={`stepper-circle ${st}`}>{st === 'completed' ? <CheckSm /> : s.num}</div>
+                <span className={`stepper-label ${st}`}>{s.label}</span>
+              </div>
+              {i < 5 && <div className={`stepper-line ${step > s.num ? 'completed' : 'inactive'}`} />}
+            </React.Fragment>
+          );
+        })}
+      </div>
+
+      <div style={{ flex: 1 }}>
+        {/* Step 1 */}
+        {step === 1 && (
+          <div className="page-body narrow">
+            <div className="section-heading">Upload Source Data</div>
+            <div className="section-sub">Upload sample files from your source system so we can classify the data.</div>
+            <div className="upload-zone" onClick={addFile}>
+              <div className="upload-icon"><UploadIc /></div>
+              <div className="upload-title">Drop files here or click to browse</div>
+              <div className="upload-sub">Upload sample exports from your practice management system</div>
+              <div className="upload-formats">Supports CSV, JSON, XLSX</div>
+            </div>
+            {files.length > 0 && (
+              <>
+                <div className="file-list">
+                  <div className="file-list-title">Uploaded Files</div>
+                  {files.map(f => (
+                    <div key={f.id} className="file-item">
+                      <div className={`file-icon-sm ${f.type}`}><FileIc /></div>
+                      <div className="file-info"><div className="file-name">{f.name}</div><div className="file-size">{f.size}</div></div>
+                      <button className="file-remove" onClick={e => { e.stopPropagation(); removeFile(f.id); }}><XIc /></button>
+                    </div>
+                  ))}
+                </div>
+                <div className="detected-source">
+                  <div className="detected-left"><CheckCircleIc /><span className="detected-label">Detected source:</span><span className="detected-value">{detectedPms}</span></div>
+                  <select className="detected-select" value={detectedPms} onChange={e => setDetectedPms(e.target.value)}>
+                    {pmsOptions.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+                  </select>
+                </div>
+              </>
+            )}
+          </div>
+        )}
+
+        {/* Step 2 */}
+        {step === 2 && (
+          <div className="page-body wide">
+            {classifying ? (
+              <div className="state-box">
+                <div className="spinner" />
+                <div className="state-title">Classifying your data…</div>
+                <div className="state-sub">Analyzing field names, values, and patterns to infer semantic meaning</div>
+              </div>
+            ) : classified ? (
+              <>
+                <div className="review-header">
+                  <div className="review-title">Review Classification</div>
+                  <div className="review-sub">Review the classification results for your uploaded files. Click a row to see field details.</div>
+                </div>
+
+                {/* Combined status banner */}
+                {(totalIssues > 0 || reviewCount > 0) ? (
+                  <div className="warning-bar">
+                    <span>⚠</span>
+                    <span>
+                      {totalIssues > 0 && `${totalIssues} parsing issue${totalIssues !== 1 ? 's' : ''} across ${cFiles.filter(f => f.issues > 0).length} file${cFiles.filter(f => f.issues > 0).length !== 1 ? 's' : ''}`}
+                      {totalIssues > 0 && reviewCount > 0 && '  ·  '}
+                      {reviewCount > 0 && `${reviewCount} field${reviewCount !== 1 ? 's' : ''} need review`}
+                    </span>
+                    {reviewCount > 0 && (
+                      <label>
+                        <span className="toggle-switch">
+                          <input type="checkbox" checked={ackReview} onChange={e => setAckReview(e.target.checked)} />
+                          <span className="toggle-track" />
+                        </span>
+                        Continue anyway
+                      </label>
+                    )}
+                  </div>
+                ) : (
+                  <div className="parse-banner clean"><CheckCircleIc /> All files parsed cleanly</div>
+                )}
+
+                <div className="search-row">
+                  <div className="search-wrap">
+                    <span className="search-icon"><SearchIc /></span>
+                    <input
+                      className="search-input"
+                      type="text"
+                      placeholder="Search files, fields, codes…"
+                      value={search}
+                      onChange={e => setSearch(e.target.value)}
+                    />
+                    {search && <button className="search-clear" onClick={() => setSearch('')}><XIc /></button>}
+                  </div>
+                  <select className="status-select" value={statusFilter} onChange={e => setStatusFilter(e.target.value)}>
+                    <option value="all">All Statuses</option>
+                    <option value="review">Needs Review</option>
+                    <option value="approved">Approved</option>
+                    <option value="abstained">Abstained</option>
+                  </select>
+                </div>
+                {isFiltered && (
+                  <div className="results-count">
+                    Showing <strong>{filteredFiles.length}</strong> of {cFiles.length} files · <strong>{filteredFieldCount}</strong> of {flat.length} fields
+                  </div>
+                )}
+
+                <div className="stat-cards">
+                  {[
+                    { key: 'all', label: 'All Fields', val: stats.all },
+                    { key: 'high', label: 'High Confidence', val: stats.high },
+                    { key: 'med', label: 'Medium', val: stats.med },
+                    { key: 'low', label: 'Low / Abstained', val: stats.low },
+                  ].map(s => (
+                    <div key={s.key} className={`stat-card ${s.key} ${filter === s.key ? 'active' : ''}`} onClick={() => setFilter(s.key)}>
+                      <div className="stat-value"><span className={`stat-dot ${s.key}`} />{s.val}</div>
+                      <div className="stat-label">{s.label}</div>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="file-row-list">
+                  <div className="file-row-list-header">
+                    <span></span><span></span><span>File</span>
+                    <span>Role</span><span>Confidence</span><span>Format</span><span>Shape</span><span>Status</span>
+                  </div>
+                  {filteredFiles.map(file => {
+                    const isOpen = expanded[file.id];
+                    const cl = confLevel(file.confidence);
+                    const approved = file.fields.filter(f => f.status === 'approved').length;
+                    const total = file.fields.length;
+                    const visibleFields = getVisibleFields(file);
+                    const needsAttentionCount = file.fields.filter(f => f.status !== 'approved').length;
+
+                    return (
+                      <div key={file.id} className={`file-row ${isOpen ? 'expanded' : ''}`}>
+                        <div className="file-row-header" onClick={() => toggleExpand(file.id)}>
+                          <div className={`file-row-chevron ${isOpen ? 'open' : ''}`}><ChevronRight /></div>
+                          <div className={`file-row-icon ${file.format.toLowerCase()}`}><FileIc /></div>
+                          <div className="file-row-name">{file.fileName}</div>
+                          <div className="file-row-col"><span className="role-tag">{file.assignedRole}</span></div>
+                          <div className="file-row-col"><span className={`conf-inline ${cl}`}><CheckCircleIc /> {file.confidence}%</span></div>
+                          <div className="file-row-col"><span className="meta-tag">{file.format}</span></div>
+                          <div className="file-row-col"><span className="shape-tag">{file.shape}</span></div>
+                          <div className="file-row-col">
+                            {file.issues === 0
+                              ? <span className="issues-tag clean">Clean</span>
+                              : <span className="issues-tag warn">⚠ {file.issues}</span>
+                            }
+                          </div>
+                        </div>
+
+                        {isOpen && (
+                          <div className="file-row-body">
+                            <div className="file-row-body-inner">
+                              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+                                <div className="file-meta-pills" style={{ marginBottom: 0 }}>
+                                  <span className="meta-pill">ID: {file.id}</span>
+                                  <span className="meta-pill">Format: {file.format.toLowerCase()}</span>
+                                  <span className="meta-pill">Shape: {file.shape}</span>
+                                  <span className="meta-pill">{total} fields · {approved} approved</span>
+                                </div>
+                                <div className="view-toggle-bar" style={{ marginBottom: 0 }}>
+                                  <button className={`view-tab ${!schemaView[file.id] ? 'active' : ''}`} onClick={() => schemaView[file.id] && toggleSchemaView(file.id)}>Fields</button>
+                                  <button className={`view-tab ${schemaView[file.id] ? 'active' : ''}`} onClick={() => !schemaView[file.id] && toggleSchemaView(file.id)}><CodeIc /> Schema</button>
+                                </div>
+                              </div>
+
+                              {schemaView[file.id] ? (
+                                <div>
+                                  <div className="schema-label">Inferred Object Schema</div>
+                                  <pre className="schema-viewer">{renderJson(generateSchema(file))}</pre>
+                                </div>
+                              ) : (
+                                <table className="fields-table">
+                                  <thead>
+                                    <tr>
+                                      <th>Field</th>
+                                      <th>Semantic Meaning</th>
+                                      <th>Code System</th>
+                                      <th>Example</th>
+                                      <th>Confidence</th>
+                                      <th>Status</th>
+                                      <th>Actions</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    {visibleFields.map(fd => {
+                                      const fcl = confLevel(fd.confidence);
+                                      return (
+                                        <tr key={fd.id} className={fd.status !== 'approved' ? 'needs-attention' : ''}>
+                                          <td><span className="field-name">{fd.fieldName}</span></td>
+                                          <td><span className="semantic-label">{fd.semanticLabel}</span></td>
+                                          <td><span className={`code-badge ${fd.ontology === 'none' ? 'none' : ''}`}>{fd.ontology === 'none' ? '—' : fd.ontology.toUpperCase()}</span></td>
+                                          <td><span className="sample-chip" title={fd.sample}>{fd.sample}</span></td>
+                                          <td><span className={`conf-value ${fcl}`}>{fd.confidence}%</span></td>
+                                          <td><span className={`status-tag ${fd.status}`}>{fd.status === 'approved' && '✓ Approved'}{fd.status === 'review' && '⚠ Review'}{fd.status === 'abstained' && '— Abstained'}</span></td>
+                                          <td>
+                                            <div className="action-btns">
+                                              <button className={`action-btn ${fd.status === 'review' ? 'needs-review' : ''}`}>Edit</button>
+                                              {fd.status !== 'approved' && <button className="action-btn approve" onClick={e => { e.stopPropagation(); approveField(file.id, fd.id); }}>Approve</button>}
+                                            </div>
+                                          </td>
+                                        </tr>
+                                      );
+                                    })}
+                                  </tbody>
+                                </table>
+                              )}
+                            </div>
+                            <div className="file-row-footer">
+                              <div>
+                                {!schemaView[file.id] && !showAllFields[file.id] && needsAttentionCount > 0 && needsAttentionCount < total && <button className="show-all-toggle" onClick={() => toggleShowAll(file.id)}>Show only {needsAttentionCount} fields needing review</button>}
+                                {!schemaView[file.id] && showAllFields[file.id] && <button className="show-all-toggle" onClick={() => toggleShowAll(file.id)}>Show all {total} fields</button>}
+                              </div>
+                              {!schemaView[file.id] && <button className="btn btn-ghost btn-sm" onClick={() => approveAllInFile(file.id)}><CheckCircleIc /> Approve All</button>}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+                {filteredFiles.length === 0 && isFiltered && (
+                  <div className="empty-state">
+                    <div className="empty-state-text">No files or fields match your current filters</div>
+                    <button className="empty-state-btn" onClick={clearAllFilters}>Clear all filters</button>
+                  </div>
+                )}
+              </>
+            ) : null}
+          </div>
+        )}
+
+        {/* Step 3 */}
+        {step === 3 && (
+          <div className="page-body narrow">
+            <div className="section-heading">Configure Output</div>
+            <div className="section-sub">Select the target standard and vocabulary for this mapping profile.</div>
+            <div className="form-section">
+              <label className="form-label">Output Data Standard</label>
+              <select className="form-select" value={standard} onChange={e => setStandard(e.target.value)}>
+                <option value="">Select standard…</option>
+                {standardOptions.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+              </select>
+              <div className="form-hint">The target format for transformed data output</div>
+            </div>
+            <div className="form-section">
+              <label className="form-label">Vocabulary / Code Set</label>
+              <select className="form-select" value={vocab} onChange={e => setVocab(e.target.value)}>
+                <option value="">Select vocabulary…</option>
+                {vocabOptions.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+              </select>
+              <div className="form-hint">The terminology system for coding clinical concepts</div>
+            </div>
+          </div>
+        )}
+
+        {/* Step 4: Graph */}
+        {step === 4 && (
+          <div className="page-body narrow">
+            <div className="graph-placeholder">
+              <div className="graph-placeholder-icon">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                  <circle cx="5" cy="6" r="2"/><circle cx="12" cy="4" r="2"/><circle cx="19" cy="8" r="2"/>
+                  <circle cx="6" cy="18" r="2"/><circle cx="14" cy="16" r="2"/><circle cx="19" cy="18" r="2"/>
+                  <line x1="7" y1="6" x2="10" y2="4.5"/><line x1="14" y1="4.5" x2="17" y2="7"/>
+                  <line x1="6" y1="8" x2="6" y2="16"/><line x1="13" y1="5.5" x2="7" y2="16.5"/>
+                  <line x1="16" y1="16" x2="17" y2="18"/><line x1="19" y1="10" x2="19" y2="16"/>
+                </svg>
+              </div>
+              <div className="graph-placeholder-title">Graph View</div>
+              <div className="graph-placeholder-sub">Visualize and explore the relationships between your source fields, semantic labels, and target ontology codes.</div>
+            </div>
+          </div>
+        )}
+
+        {/* Step 5 */}
+        {step === 5 && (
+          <div className="page-body narrow">
+            {generating ? (
+              <div className="state-box"><div className="spinner" /><div className="state-title">Generating Mapping Profile…</div><div className="state-sub">Creating transformation rules based on your configuration</div></div>
+            ) : generated ? (
+              <div className="state-box"><div className="success-circle"><CheckLg /></div><div className="state-title">Mapping Profile Generated</div><div className="state-sub">Your profile is ready. Continue to name and save it.</div></div>
+            ) : (
+              <>
+                <div className="section-heading">Generate Mapping Profile</div>
+                <div className="section-sub">Review your configuration, then generate the mapping profile.</div>
+                <div className="summary-card">
+                  <div className="summary-card-header"><div className="summary-card-icon"><BrainIc /></div><div className="summary-card-title">Configuration Summary</div></div>
+                  <div className="summary-row"><div className="summary-label">Source Files</div><div className="summary-value">{files.length} file(s)</div></div>
+                  <div className="summary-row"><div className="summary-label">Source System</div><div className="summary-value">{detectedPms}</div></div>
+                  <div className="summary-row"><div className="summary-label">Fields Classified</div><div className="summary-value">{flat.length} fields across {cFiles.length} files</div></div>
+                  <div className="summary-row"><div className="summary-label">Output Standard</div><div className="summary-value">{standardOptions.find(s => s.value === standard)?.label}</div></div>
+                  <div className="summary-row"><div className="summary-label">Vocabulary</div><div className="summary-value">{vocabOptions.find(v => v.value === vocab)?.label}</div></div>
+                </div>
+                <div className="generate-area">
+                  <div className="generate-title">Ready to Generate</div>
+                  <div className="generate-sub">This will create transformation rules for {flat.filter(f => f.status === 'approved').length} approved fields</div>
+                  <button className="btn-generate" onClick={handleGenerate}><SparklesIc /> Generate Mapping Profile</button>
+                </div>
+              </>
+            )}
+          </div>
+        )}
+
+        {/* Step 6 */}
+        {step === 6 && (
+          <div className="page-body narrow">
+            <div className="section-heading">Save Mapping Profile</div>
+            <div className="section-sub">Give your profile a name and review the final details.</div>
+            <div className="form-section">
+              <label className="form-label">Profile Name</label>
+              <input className="form-input" value={profileName} onChange={e => setProfileName(e.target.value)} placeholder="e.g. OpenDental → FHIR R4" />
+              <div className="form-hint">A descriptive name to identify this mapping profile</div>
+            </div>
+            <div className="summary-card" style={{ marginTop: 24 }}>
+              <div className="summary-card-header"><div className="summary-card-icon"><CheckCircleIc /></div><div className="summary-card-title">Profile Summary</div></div>
+              <div className="summary-row"><div className="summary-label">Source System</div><div className="summary-value">{detectedPms}</div></div>
+              <div className="summary-row"><div className="summary-label">Output Standard</div><div className="summary-value">{standardOptions.find(s => s.value === standard)?.label}</div></div>
+              <div className="summary-row"><div className="summary-label">Vocabulary</div><div className="summary-value">{vocabOptions.find(v => v.value === vocab)?.label}</div></div>
+              <div className="summary-row"><div className="summary-label">Files</div><div className="summary-value">{cFiles.length} classified files</div></div>
+              <div className="summary-row"><div className="summary-label">Fields</div><div className="summary-value">{flat.length} total · {flat.filter(f => f.status === 'approved').length} approved</div></div>
+              <div className="summary-row"><div className="summary-label">Status</div><div className="summary-value" style={{ color: '#10b981', fontWeight: 600 }}>Generated</div></div>
+            </div>
+            <div className="summary-card">
+              <div className="summary-card-header"><div className="summary-card-icon"><BrainIc /></div><div className="summary-card-title">Sample Mappings</div></div>
+              {flat.filter(f => f.status === 'approved' && f.ontologyCode).slice(0, 4).map(f => (
+                <div key={f.id} className="summary-row">
+                  <div className="summary-label"><span className="field-name">{f.fieldName}</span></div>
+                  <div className="summary-value">{f.semanticLabel} → <span className="preview-code">{f.ontologyCode}</span></div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Footer */}
+      <div className="footer-bar">
+        <div className="footer-left">{step > 1 && !classifying && !generating && <button className="btn btn-ghost" onClick={handleBack}>← Back</button>}</div>
+        <div className="footer-right">
+          <button className="btn btn-secondary">Cancel</button>
+          {step < 6
+            ? <button className="btn btn-primary" onClick={handleNext} disabled={!canNext() || classifying || generating}>{step === 1 ? 'Classify Data →' : 'Continue →'}</button>
+            : <button className="btn btn-primary" disabled={!profileName.trim()} onClick={() => alert('Profile saved!')}>Save Profile</button>
+          }
+        </div>
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>
