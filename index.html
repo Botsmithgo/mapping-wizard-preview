@@ -1016,6 +1016,7 @@
     .graph-node.emit { border-left: 3px solid #f59e0b; }
     .graph-node.purple { border-left: 3px solid #8b5cf6; }
     .graph-node.blue { border-left: 3px solid #3b82f6; }
+    .graph-node.teal { border-left: 3px solid #14b8a6; }
     .graph-node-header {
       padding: var(--sp-2) var(--sp-3);
       border-bottom: 1px solid var(--gray-150);
@@ -1038,6 +1039,7 @@
     .graph-node-badge.emit { background: #fffbeb; color: #b45309; border: 1px solid #fde68a; }
     .graph-node-badge.purple { background: #f5f3ff; color: #6d28d9; border: 1px solid #ddd6fe; }
     .graph-node-badge.blue { background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; }
+    .graph-node-badge.teal { background: #f0fdfa; color: #0f766e; border: 1px solid #99f6e4; }
     .graph-node-title {
       font-size: var(--text-sm);
       font-weight: 600;
@@ -1552,12 +1554,13 @@ function GraphViewStep({ files, fields, onBack, onContinue }) {
   }));
 
   const processNodes = [
-    { id: 'p1', type: 'process', name: 'Field Mapping', badge: 'Field Mapping', color: 'purple', x: 300, y: 80 },
-    { id: 'p2', type: 'process', name: 'Ontology Binding', badge: 'Ontology', color: 'blue', x: 300, y: 220 },
-    { id: 'p3', type: 'process', name: 'Validation', badge: 'Validate', color: 'process', x: 300, y: 360 },
+    { id: 'p1', type: 'process', name: 'Ontology Binding', badge: 'Ontology', color: 'blue', x: 300, y: 50 },
+    { id: 'p2', type: 'process', name: 'Validation', badge: 'Validate', color: 'process', x: 300, y: 160 },
+    { id: 'p3', type: 'process', name: 'Enrichment', badge: 'Enrich', color: 'purple', x: 300, y: 270 },
+    { id: 'p4', type: 'process', name: 'Mapping', badge: 'Map', color: 'teal', x: 300, y: 380 },
   ];
 
-  const emitNode = { id: 'emit', type: 'emit', name: 'Emit Outputs', badge: 'Emit', x: 540, y: 200 };
+  const emitNode = { id: 'emit', type: 'emit', name: 'Emit Outputs', badge: 'Emit', x: 540, y: 215 };
 
   const outputNodes = [
     { id: 'o1', type: 'output', name: 'Patient', badge: 'FHIR', x: 760, y: 40 },
